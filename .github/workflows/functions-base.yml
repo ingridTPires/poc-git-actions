@@ -1,0 +1,66 @@
+name: "Deploy: Base"
+on:
+  workflow_call:
+    secrets:
+      GCP_SERVICE_ACCOUNT_KEY:
+        required: true
+      GCP_ENV_VARS:
+        required: false
+    inputs:
+      function_name:
+        required: true
+        type: string
+      runtime:
+        required: true
+        type: string
+      entrypoint:
+        required: true
+        type: string
+      source_dir:
+        required: true
+        type: string
+      region:
+        type: string
+        default: 'southamerica-east1'
+      allow_unauthenticated:
+        type: boolean
+        default: false
+      vpc_connector:
+        type: string
+        required: false
+      vpc_connector_egress_settings:
+        type: string
+        required: false
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:    
+    - id: 'checkout'
+      uses: actions/checkout@v4
+
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}'
+
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v2'
+    
+    - id: 'deploy-function'
+      name: 'Deploy Cloud Function'
+      uses: 'google-github-actions/deploy-cloud-functions@v2'
+      with:
+        name: '${{ inputs.function_name }}'
+        runtime: '${{ inputs.runtime }}'
+        region: '${{ inputs.region }}'
+        entry_point: '${{ inputs.entrypoint }}'
+        source_dir: '${{ inputs.source_dir }}'
+        env_vars: '${{ secrets.GCP_ENV_VARS }}'
+        vpc_connector: '${{ inputs.vpc_connector }}'
+        vpc_connector_egress_settings: '${{ inputs.vpc_connector_egress_settings }}'
+        
+    - name: 'Allow Unauthenticated Requests'
+      if: inputs.allow_unauthenticated == true
+      run: |
+        gcloud functions add-iam-policy-binding ${{inputs.function_name}} --member="allUsers" --role="roles/cloudfunctions.invoker" --region=${{inputs.region}}
