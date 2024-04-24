@@ -9,12 +9,17 @@ on:
 
 jobs:
   setup-and-deploy:
-    uses: IngridTPires/poc-git-actions/.github/workflows/functions-base.yml@main
-    with:
-      function_name: "hello-world"
-      runtime: "dotnet6"
-      entrypoint: "HelloWorld.Function"
-      source_dir: "src/HelloWorld/HelloWorld"
-      allow_unauthenticated: true
-    secrets:
-      GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_FUNCTION_SERVICE_ACCOUNT_KEY }}
+    runs-on: ubuntu-latest
+    steps:    
+      - id: 'checkout'
+        uses: actions/checkout@v4
+
+      - name: 'Deploy Base'
+        uses: IngridTPires/poc-git-actionsX/.github/workflows/functions-base.yml@main
+        with:
+          function_name: "hello-world"
+          runtime: "dotnet6"
+          entrypoint: "HelloWorld.Function"
+          source_dir: "src/HelloWorld/HelloWorld"
+          allow_unauthenticated: true
+          GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_FUNCTION_SERVICE_ACCOUNT_KEY }}
