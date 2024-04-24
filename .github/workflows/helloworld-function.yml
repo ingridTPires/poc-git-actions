@@ -3,7 +3,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - 'src/HelloWorld/HelloWorld/**'
+      - 'src/HelloWorld/**'
       
   workflow_dispatch:
 
@@ -11,15 +11,15 @@ jobs:
   setup-and-deploy:
     runs-on: ubuntu-latest
     steps:    
-      - id: 'checkout'
+      - name: "Checkout"
         uses: actions/checkout@v4
 
       - name: 'Deploy Base'
-        uses: IngridTPires/poc-git-actionsX/.github/workflows/functions-base.yml@main
+        uses: IngridTPires/poc-git-actions/.github/workflows/functions-base.yml@main
         with:
           function_name: "hello-world"
           runtime: "dotnet6"
           entrypoint: "HelloWorld.Function"
-          source_dir: "src/HelloWorld/HelloWorld"
+          source_dir: "src/HelloWorld"
           allow_unauthenticated: true
           GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_FUNCTION_SERVICE_ACCOUNT_KEY }}
