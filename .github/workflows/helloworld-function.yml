@@ -18,3 +18,4 @@ jobs:
       allow_unauthenticated: true
     secrets:
       GCP_SERVICE_ACCOUNT_KEY: ${{ secrets.GCP_FUNCTION_SERVICE_ACCOUNT_KEY }}
+      GCP_ENV_VARS: 'KEY1=${{ secrets.KEY1 }},DB_CONNECTION=${{ secrets.DB_CONNECTION }}'
